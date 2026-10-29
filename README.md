@@ -1,5 +1,7 @@
 # multimodal-page-rag
 
+[![tests](https://github.com/wchklaus97/multimodal-page-rag/actions/workflows/tests.yml/badge.svg)](https://github.com/wchklaus97/multimodal-page-rag/actions/workflows/tests.yml)
+
 **Theme: choosing the "cut unit" before you embed, and merging text + image evidence with late fusion.**
 
 A small local RAG demo on SQLite + [sqlite-vec](https://github.com/asg017/sqlite-vec). Documents are PDFs with text *and* figures. The retrieval unit is a **page**; the text and the picture of a page share one `page_id`, so hits from different modalities can be merged.
