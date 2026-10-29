@@ -16,7 +16,8 @@ from ._http import post_json
 SYSTEM_PROMPT = (
     "You answer questions using ONLY the numbered context passages. "
     "Cite passages like [1] or [2]. If the context does not contain the answer, "
-    "say you don't know instead of guessing. Reply in the language of the question."
+    "say you don't know instead of guessing. Always reply in the same language as the Question, "
+    "even when the context passages are in another language."
 )
 
 

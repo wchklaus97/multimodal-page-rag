@@ -106,6 +106,30 @@ tests/       fusion, store/pipeline with a stub multimodal embedder (no download
 LEARNING.md  繁體中文 (zh-HK) + English
 ```
 
+## Run with OpenRouter (or any OpenAI-compatible API)
+
+Keep the key in your shell (e.g. `~/.zshrc`), never in the repo. `.env` files are git-ignored.
+
+```bash
+export OPENROUTER_API_KEY="..."
+export OPENAI_API_KEY="$OPENROUTER_API_KEY"
+export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
+```
+
+```bash
+LLM_PROVIDER=openai LLM_MODEL=openai/gpt-4o-mini uv run mmrag query "Which department had the highest quarterly expense claims?"
+```
+
+Model names use OpenRouter's `vendor/model` form. Embeddings stay local (`local` or `hash`); this demo does not send document embeddings to OpenRouter.
+
+### Live tests (opt-in, cost a few cents)
+
+```bash
+RUN_LIVE_LLM=1 LIVE_MODEL=openai/gpt-4o-mini uv run pytest tests/test_live_llm.py -v
+```
+
+They are skipped in a normal `uv run pytest`. They check grounded answers, citations, filters.
+
 ## Contributing
 
 Good first issues: section-level units, OCR for scanned pages, a Streamlit viewer that shows the page PNGs next to scores, a Gemini multimodal embedder. Keep `fusion.py` dependency-free. MIT licensed.
