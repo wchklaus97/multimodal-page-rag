@@ -21,6 +21,10 @@ fusion_method = "rrf"      # rrf (rank-based) | minmax (normalised scores)
 fusion_pool = 10           # candidates taken from each modality before merging
 text_weight = 1.0
 image_weight = 1.0
+# RRF ignores scores, so noise-level hits still earn rank credit. Drop them first.
+# (hash text embedder: ~0.1 is noise; CLIP text->image: good matches are only ~0.25)
+text_min_score = 0.0
+image_min_score = 0.0
 
 llm_provider = "auto"      # auto | openai | gemini | ollama | none
 llm_model = ""

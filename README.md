@@ -89,6 +89,7 @@ If no image index exists, `fusion` falls back to text and says so.
 - **No OCR.** A scanned page has no text layer: mode A drops it; mode B keeps it, but only the image vector can find it, and CLIP is weak at reading small print.
 - **Score scales differ.** CLIP text→image cosine is typically ~0.2–0.35 for good matches; text→text is often 0.5+. Don't add raw scores. That's why fusion uses ranks (RRF) or normalisation.
 - **Page = too coarse?** A long page is one vector and may exceed the text model's token limit (truncated silently). Pick a smaller unit (section) if your pages are dense.
+- **RRF rewards noise.** RRF uses ranks only, so a near-zero match still earns credit. Real run with CLIP: for "a bar chart", fusion put `supplier-onboarding` first because its *text* hit was rank 1 at cos 0.086 (noise), while the chart page (CLIP cos 0.266) came second. Setting `text_min_score = 0.1` drops noise first and the chart page ranks #1. Pick floors per embedder.
 - **Filter after top-k.** The org filter (`--dept`) is applied after the vector search, so the candidate pool is widened ×5 when filtering; a very selective filter can still return fewer than k.
 - **Embedders must match.** The index records its models; querying with a different one is refused.
 
@@ -122,6 +123,13 @@ LLM_PROVIDER=openai LLM_MODEL=openai/gpt-4o-mini uv run mmrag query "Which depar
 ```
 
 Model names use OpenRouter's `vendor/model` form. Embeddings stay local (`local` or `hash`); this demo does not send document embeddings to OpenRouter.
+
+### Real CLIP test (opt-in, local, ~600 MB model download once)
+
+```bash
+uv sync --extra images
+RUN_CLIP=1 uv run pytest tests/test_live_clip.py -v
+```
 
 ### Live tests (opt-in, cost a few cents)
 

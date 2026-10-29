@@ -69,8 +69,11 @@ def test_text_mode_finds_hr_policy_and_org_filter_works(tmp_path):
     cfg, store, text, _ = _build(tmp_path, "text")
     pages, _ = retrieve(store, cfg, "how many days of annual leave", "text", text)
     assert pages[0].source.endswith("leave-and-mpf-policy.pdf") and pages[0].department == "hr"
-    only_sz, _ = retrieve(store, cfg, "how many days of annual leave", "text", text, entity="sz-subsidiary")
+    only_sz, _ = retrieve(store, cfg, "who approves orders above RMB 50,000", "text", text, entity="sz-subsidiary")
     assert only_sz and all(p.entity == "sz-subsidiary" for p in only_sz)
+    # Shenzhen has no leave policy: zero-similarity pages are dropped instead of padding the result
+    irrelevant, _ = retrieve(store, cfg, "how many days of annual leave", "text", text, entity="sz-subsidiary")
+    assert irrelevant == []
 
 
 def test_figure_page_has_text_vector_too_but_image_mode_finds_it_by_caption(tmp_path):

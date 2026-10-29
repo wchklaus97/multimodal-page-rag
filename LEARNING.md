@@ -24,6 +24,9 @@ Scenario: a fictional Hong Kong group with a Shenzhen subsidiary; files live in 
 - `minmax`：每個清單先縮放到 0–1，再加權。保留分數差距，但一個極端值會壓扁其他。
 - 對比 early fusion：先將兩種向量混合再搜尋，需要一個同時理解兩種模態嘅模型。
 
+### 3b. 真 CLIP 實測：RRF 會獎勵雜訊
+用真 CLIP 問「a bar chart」：image 模式正確將圖表頁排第一（cos 0.266）。但 fusion 模式反而將深圳供應商頁排第一，因為佢嘅文字分數只係 0.086（雜訊），但喺文字清單排第 1，RRF 只睇排名就照計分。設定 `text_min_score = 0.1` 先過濾雜訊，圖表頁就返到第一。教訓：**融合之前，每個模態要有自己嘅最低分數門檻。**
+
 ### 4. 公司結構變成 metadata
 資料夾 `hk-hq/finance/` 自動變成 `entity=hk-hq`、`department=finance`。用 `--dept finance` 過濾。
 **陷阱**：過濾喺向量搜尋**之後**做，若部門好冷門，top-k 可能得返少過 k 個結果。所以過濾時會將候選池放大 5 倍。
@@ -60,6 +63,9 @@ Retrieve **separately**, then **merge rankings by `page_id`**.
 - `rrf` uses ranks only (1/(60+rank)); immune to scale. Default.
 - `minmax` rescales each list to 0–1 then takes a weighted sum. Keeps score gaps, but an outlier compresses the rest.
 - Contrast with early fusion: mix modalities in one vector before search; needs one jointly trained model.
+
+### 3b. Real CLIP run: RRF rewards noise
+With real CLIP, "a bar chart" in image mode correctly ranks the chart page first (cos 0.266). In fusion mode the Shenzhen supplier page came first: its text score was only 0.086 (noise) but it was rank 1 in the text list, and RRF only sees ranks. Setting `text_min_score = 0.1` removes the noise and the chart page returns to #1. Lesson: **give each modality its own score floor before fusing.**
 
 ### 4. Company structure as metadata
 `hk-hq/finance/` becomes `entity=hk-hq`, `department=finance`; filter with `--dept finance`.

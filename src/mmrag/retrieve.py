@@ -65,7 +65,12 @@ def retrieve(
     filtering = bool(department or entity)
     pool = cfg.fusion_pool * (5 if filtering else 1)  # post-filtering needs a deeper candidate list
 
+    min_score = {"text": cfg.text_min_score, "image": cfg.image_min_score}
+
     def keep(h: Hit) -> bool:
+        # RRF uses ranks only, so a near-zero "match" would still earn credit: cut those first.
+        if h.score <= min_score[h.modality]:
+            return False
         return (not department or h.department == department) and (not entity or h.entity == entity)
 
     by_modality: dict[str, list[Hit]] = {}

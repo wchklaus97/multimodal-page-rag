@@ -25,6 +25,8 @@ class Config:
     fusion_pool: int = 10
     text_weight: float = 1.0
     image_weight: float = 1.0
+    text_min_score: float = 0.0  # drop hits at/below this cosine before fusion (RRF ignores scores)
+    image_min_score: float = 0.0
     llm_provider: str = "auto"
     llm_model: str = ""
 
@@ -38,6 +40,9 @@ _ENV = {
     "IMAGE_MODEL": "image_model",
     "LLM_PROVIDER": "llm_provider",
     "LLM_MODEL": "llm_model",
+    "TEXT_MIN_SCORE": "text_min_score",
+    "IMAGE_MIN_SCORE": "image_min_score",
+    "FUSION_METHOD": "fusion_method",
 }
 
 
@@ -48,7 +53,7 @@ def load_config(path: str | os.PathLike | None = None) -> Config:
     cfg = Config(**{k: v for k, v in values.items() if k in known})
     for env, attr in _ENV.items():
         if os.environ.get(env):
-            setattr(cfg, attr, os.environ[env])
+            setattr(cfg, attr, type(getattr(cfg, attr))(os.environ[env]))
     if cfg.index_mode not in {"text", "multimodal"}:
         raise ValueError(f"index_mode must be 'text' or 'multimodal', got {cfg.index_mode!r}")
     return cfg
