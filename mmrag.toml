@@ -1,0 +1,26 @@
+# Env vars override: MMRAG_DB, INDEX_MODE, TEXT_PROVIDER, TEXT_MODEL, IMAGE_PROVIDER, IMAGE_MODEL, LLM_PROVIDER, LLM_MODEL
+
+db_path = "mmrag.db"
+
+# --- The "cut unit" is chosen at INGEST, before any embedding: one PDF page = one unit. ---
+# A) "text"        : page text            -> text embedding
+# B) "multimodal"  : page text + page image -> text embedding AND image embedding (same page_id)
+index_mode = "text"
+
+text_provider = "local"    # local | hash
+text_model = ""
+
+# Image/multimodal embedder, used when index_mode = "multimodal".
+# clip = sentence-transformers CLIP (needs `pip install -e '.[images]'`); vertex = Vertex AI multimodalembedding@001; none
+image_provider = "clip"
+image_model = ""
+
+# --- Retrieval ---
+top_k = 3
+fusion_method = "rrf"      # rrf (rank-based) | minmax (normalised scores)
+fusion_pool = 10           # candidates taken from each modality before merging
+text_weight = 1.0
+image_weight = 1.0
+
+llm_provider = "auto"      # auto | openai | gemini | ollama | none
+llm_model = ""
