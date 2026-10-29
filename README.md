@@ -17,7 +17,7 @@ A small local RAG demo on SQLite + [sqlite-vec](https://github.com/asg017/sqlite
 
 ## The part you can lift out
 
-[`src/mmrag/fusion.py`](src/mmrag/fusion.py) is a single zero-dependency file (RRF and min-max fusion over ranked lists). Copy it into any project that merges results from several retrievers; it has its own tests in `tests/test_fusion.py`.
+[`src/mmrag/fusion.py`](src/mmrag/fusion.py) is a single zero-dependency file (RRF and min-max fusion over ranked lists). Copy it into any project that merges results from several retrievers; it has its own tests in `tests/test_fusion.py`. [hybrid-search-rag](https://github.com/wchklaus97/hybrid-search-rag) reuses it verbatim to merge BM25 and vector results.
 
 ```mermaid
 flowchart LR
@@ -166,13 +166,14 @@ Good first issues: section-level units, OCR for scanned pages, a Streamlit viewe
 
 ## Series
 
-Three small open-source demos built around one fictional Hong Kong company, each with one theme and one module you can lift out:
+Four small open-source demos built around one fictional Hong Kong company, each with one theme and one module you can lift out:
 
 | Repo | Theme | Lift-out module |
 |---|---|---|
 | [local-rag-sqlite](https://github.com/wchklaus97/local-rag-sqlite) | Classic RAG pipeline, chunking first | `chunk.py` |
 | [multimodal-page-rag](https://github.com/wchklaus97/multimodal-page-rag) | Page-level units + late fusion | `fusion.py` |
 | [agent-rag-pydantic-ai](https://github.com/wchklaus97/agent-rag-pydantic-ai) | Retrieval as an agent tool | `tools.py` |
+| [hybrid-search-rag](https://github.com/wchklaus97/hybrid-search-rag) | Hybrid BM25 + vector + rerank for code-mixed text | `cjk_tokenize.py` |
 
 ## License
 
