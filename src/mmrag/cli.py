@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from pathlib import Path
 
 from .config import load_config
 from .embed import get_multimodal_embedder, get_text_embedder
@@ -84,6 +85,41 @@ def cmd_reset(args, cfg) -> int:
     return 0
 
 
+def cmd_eval(args, cfg) -> int:
+    import tempfile
+    from dataclasses import replace
+
+    from .evaluate import default_settings, evaluate_setting, load_qa, to_markdown
+    from .ingest import pdfium_renderer
+
+    qa = load_qa(args.qa)
+    text_emb = get_text_embedder(args.text, "")
+    mm_emb = get_multimodal_embedder(cfg.image_provider, cfg.image_model)
+    renderer = None
+    if mm_emb is not None:
+        try:
+            renderer = pdfium_renderer()
+        except ImportError:
+            mm_emb = None
+    with tempfile.TemporaryDirectory() as tmp:
+        run_cfg = replace(cfg, db_path=str(Path(tmp) / "eval.db"), index_mode="multimodal" if mm_emb else "text")
+        store = Store(run_cfg.db_path)
+        build_index(args.folder, run_cfg, text_emb, mm_emb, store, renderer)
+        settings = default_settings(store.has_index("image"), args.floor)
+        results = [evaluate_setting(store, run_cfg, qa, s, text_emb, mm_emb, args.k) for s in settings]
+        store.close()
+    header = f"text: `{text_emb.name}` · image: `{mm_emb.name if mm_emb else 'none (image modes skipped)'}`"
+    table = to_markdown(results, args.k, len(qa), header)
+    print(table)
+    if args.show_misses:
+        for r in results:
+            print(f"misses [{r.setting}]: {', '.join(r.misses) or '-'}")
+    if args.out:
+        Path(args.out).write_text(table, encoding="utf-8")
+        print(f"wrote {args.out}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="mmrag", description=__doc__)
     p.add_argument("--config")
@@ -100,6 +136,16 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--dept", help="only pages from this department folder, e.g. hr")
     s.add_argument("--entity", help="only pages from this entity folder, e.g. hk-hq")
     s.set_defaults(fn=cmd_query)
+
+    s = sub.add_parser("eval", help="score text / image / fusion retrieval on a page-level QA set")
+    s.add_argument("--qa", default="eval/harbour_lane_pages_qa.jsonl")
+    s.add_argument("--folder", default="examples/harbour-lane")
+    s.add_argument("--text", default="hash", help="text embedder: hash | local")
+    s.add_argument("--floor", type=float, default=0.1, help="text score floor tried in fusion rows")
+    s.add_argument("-k", type=int, default=3)
+    s.add_argument("--out")
+    s.add_argument("--show-misses", action="store_true")
+    s.set_defaults(fn=cmd_eval)
 
     s = sub.add_parser("stats")
     s.set_defaults(fn=cmd_stats)

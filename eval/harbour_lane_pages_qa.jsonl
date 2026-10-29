@@ -1,0 +1,18 @@
+{"id": "leave-days-en", "lang": "en", "kind": "text", "q": "How many days of annual leave do staff get after probation?", "page_id": "hk-hq/hr/leave-and-mpf-policy.pdf#p1"}
+{"id": "leave-days-zh", "lang": "zh", "kind": "text", "q": "試用期之後有幾多日年假？", "page_id": "hk-hq/hr/leave-and-mpf-policy.pdf#p1"}
+{"id": "leave-carry-en", "lang": "en", "kind": "text", "q": "Can unused leave roll over into next year?", "page_id": "hk-hq/hr/leave-and-mpf-policy.pdf#p1"}
+{"id": "mpf-en", "lang": "en", "kind": "text", "q": "Does the company pay the employer MPF contribution?", "page_id": "hk-hq/hr/leave-and-mpf-policy.pdf#p2"}
+{"id": "medical-zh", "lang": "zh", "kind": "text", "q": "醫療保險幾時開始生效？", "page_id": "hk-hq/hr/leave-and-mpf-policy.pdf#p2"}
+{"id": "claim-deadline-en", "lang": "en", "kind": "text", "q": "How long do I have to submit an expense claim?", "page_id": "hk-hq/finance/expense-claims.pdf#p1"}
+{"id": "taxi-en", "lang": "en", "kind": "text", "q": "Who approves a taxi fare above HKD 300?", "page_id": "hk-hq/finance/expense-claims.pdf#p1"}
+{"id": "client-meal-zh", "lang": "zh", "kind": "text", "q": "請客戶食飯每位超過幾多錢要批？", "page_id": "hk-hq/finance/expense-claims.pdf#p1"}
+{"id": "pdpo-en", "lang": "en", "kind": "text", "q": "Can I email the customer list to my personal account?", "page_id": "hk-hq/compliance/pdpo-data-handling.pdf#p1"}
+{"id": "leak-zh", "lang": "zh", "kind": "text", "q": "懷疑資料外洩要幾耐之內報告？", "page_id": "hk-hq/compliance/pdpo-data-handling.pdf#p1"}
+{"id": "supplier-docs-en", "lang": "en", "kind": "text", "q": "What must a new Shenzhen supplier submit?", "page_id": "sz-subsidiary/operations/supplier-onboarding.pdf#p1"}
+{"id": "big-po-zh", "lang": "zh", "kind": "text", "q": "超過五萬人民幣嘅訂單要邊個一齊批？", "page_id": "sz-subsidiary/operations/supplier-onboarding.pdf#p1"}
+{"id": "payrun-en", "lang": "en", "kind": "text", "q": "How often are suppliers paid?", "page_id": "sz-subsidiary/operations/supplier-onboarding.pdf#p1"}
+{"id": "chart-bar-en", "lang": "en", "kind": "visual", "q": "a bar chart", "page_id": "hk-hq/finance/expense-claims.pdf#p2"}
+{"id": "chart-graph-en", "lang": "en", "kind": "visual", "q": "a graph comparing spending across teams", "page_id": "hk-hq/finance/expense-claims.pdf#p2"}
+{"id": "chart-colour-en", "lang": "en", "kind": "visual", "q": "colourful bars on a white page", "page_id": "hk-hq/finance/expense-claims.pdf#p2"}
+{"id": "chart-zh", "lang": "zh", "kind": "visual", "q": "各部門開支嘅柱狀圖", "page_id": "hk-hq/finance/expense-claims.pdf#p2"}
+{"id": "chart-sales-en", "lang": "en", "kind": "visual", "q": "Which team spent the most last quarter according to the figure?", "page_id": "hk-hq/finance/expense-claims.pdf#p2"}

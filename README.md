@@ -86,12 +86,31 @@ If no image index exists, `fusion` falls back to text and says so.
 | Scanned PDF | fails (no text) | still indexed in mode B |
 | Cost | cheap | page rendering + image model |
 
+## Evaluation (`mmrag eval`)
+
+`eval/harbour_lane_pages_qa.jsonl`: 18 zh/en questions, each with the page that answers it, tagged **text** (answer in the words) or **visual** (described by how the page looks, e.g. "a bar chart"). `mmrag eval` builds one index and scores text, image, and four fusion settings (RRF / min-max, with and without a text score floor).
+
+```bash
+uv sync --extra images
+uv run mmrag eval --text hash  --show-misses
+uv run mmrag eval --text local --show-misses
+```
+
+Measured with real CLIP ([eval/RESULTS.md](eval/RESULTS.md)):
+
+| text embedder | best setting | hit@3 | note |
+|---|---|---|---|
+| `hash` (weak) | fusion min-max | 0.83 | text-only finds 0/5 visual questions; fusion rescues them |
+| multilingual (strong) | **text only** | 1.00 (MRR 0.94) | adding CLIP *lowered* hit@1 0.89 → 0.56–0.72 |
+
+Takeaway: late fusion is a tool for a weak or missing modality, not a free upgrade. The score floor I added from one example did not help across the set, so its default stays 0.
+
 ## Failure modes (read these)
 
 - **No OCR.** A scanned page has no text layer: mode A drops it; mode B keeps it, but only the image vector can find it, and CLIP is weak at reading small print.
 - **Score scales differ.** CLIP text→image cosine is typically ~0.2–0.35 for good matches; text→text is often 0.5+. Don't add raw scores. That's why fusion uses ranks (RRF) or normalisation.
 - **Page = too coarse?** A long page is one vector and may exceed the text model's token limit (truncated silently). Pick a smaller unit (section) if your pages are dense.
-- **RRF rewards noise.** RRF uses ranks only, so a near-zero match still earns credit. Real run with CLIP: for "a bar chart", fusion put `supplier-onboarding` first because its *text* hit was rank 1 at cos 0.086 (noise), while the chart page (CLIP cos 0.266) came second. Setting `text_min_score = 0.1` drops noise first and the chart page ranks #1. Pick floors per embedder.
+- **RRF rewards noise (one query).** RRF uses ranks only, so a near-zero match still earns credit. Real run with CLIP: for "a bar chart", fusion put `supplier-onboarding` first because its *text* hit was rank 1 at cos 0.086 (noise), while the chart page (CLIP cos 0.266) came second. Setting `text_min_score = 0.1` drops noise first and the chart page ranks #1. Pick floors per embedder - but measure: across the full eval set the floor did not help (see Evaluation).
 - **Filter after top-k.** The org filter (`--dept`) is applied after the vector search, so the candidate pool is widened ×5 when filtering; a very selective filter can still return fewer than k.
 - **Embedders must match.** The index records its models; querying with a different one is refused.
 

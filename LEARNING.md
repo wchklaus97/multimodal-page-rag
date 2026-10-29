@@ -31,6 +31,14 @@ Scenario: a fictional Hong Kong group with a Shenzhen subsidiary; files live in 
 資料夾 `hk-hq/finance/` 自動變成 `entity=hk-hq`、`department=finance`。用 `--dept finance` 過濾。
 **陷阱**：過濾喺向量搜尋**之後**做，若部門好冷門，top-k 可能得返少過 k 個結果。所以過濾時會將候選池放大 5 倍。
 
+### 5. 評估：用數字驗證（`mmrag eval`）
+18 條中英問題，每條註明答案喺邊一頁，分「文字題」同「視覺題」（例如「a bar chart」）。用真 CLIP 實測（`eval/RESULTS.md`）：
+- **文字模型弱（hash）時，融合有用**：純文字一條視覺題都搵唔到（0.00），CLIP 搵到 0.60，fusion min-max 整體最好（hit@3 0.83）。
+- **文字模型強（多語）時，加圖像反而差咗**：純文字 hit@3 1.00、MRR 0.94，連視覺題都全中，因為圖表頁有文字標籤。加入 CLIP 後 hit@1 由 0.89 跌到 0.56–0.72。圖像檢索真正有用嘅地方，係**冇文字**嘅頁面（掃描、相片、冇標籤嘅圖）。
+- **CLIP ViT-B/32 只識英文**，中文 query 喺 image 模式會 miss。
+- **之前用一個例子加嘅分數門檻，喺成個評估集冇幫助**（有時仲差咗），所以預設維持 0。教訓：**唔好用單一例子調參。**
+- 題目少：18 條（每條 0.056），視覺題只有 5 條（每條 0.2）。
+
 ### 常見錯誤 / 失敗模式
 - 掃描版 PDF 冇文字層、冇 OCR：純文字索引會直接丟棄；多模態索引保留，但只有圖像向量搵得到佢，細字 CLIP 睇唔清。
 - 以為 embedding API 會切頁（唔會）。
@@ -70,6 +78,14 @@ With real CLIP, "a bar chart" in image mode correctly ranks the chart page first
 ### 4. Company structure as metadata
 `hk-hq/finance/` becomes `entity=hk-hq`, `department=finance`; filter with `--dept finance`.
 **Pitfall:** the filter runs *after* vector search, so a rare department can leave fewer than k results. The candidate pool is widened ×5 when filtering.
+
+### 5. Evaluation: verify with numbers (`mmrag eval`)
+18 zh/en questions, each labelled with the answering page and tagged **text** or **visual** (e.g. "a bar chart"). Measured with real CLIP (`eval/RESULTS.md`):
+- **Weak text model (hash): fusion helps.** Text-only finds none of the visual questions (0.00); CLIP finds 0.60; fusion min-max is best overall (hit@3 0.83).
+- **Strong text model (multilingual): adding images made it worse.** Text-only hits 1.00 / MRR 0.94, visual questions included, because the chart page has text labels. Adding CLIP drops hit@1 from 0.89 to 0.56–0.72. Image retrieval earns its place on pages **without** text (scans, photos, unlabelled diagrams).
+- **CLIP ViT-B/32 is English-only:** Chinese queries miss in image mode.
+- **The score floor I added from one example did not help across the set** (sometimes worse), so the default stays 0. Lesson: **never tune on one anecdote.**
+- Small set: 18 questions (0.056 each), only 5 visual (0.2 each).
 
 ### Common mistakes / failure modes
 - Scanned PDFs with no text layer and no OCR: dropped by the text index; kept by the multimodal index but only findable through the image vector, and CLIP reads small print poorly.
