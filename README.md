@@ -37,6 +37,7 @@ flowchart LR
 ## Quickstart
 
 ```bash
+git clone https://github.com/wchklaus97/multimodal-page-rag.git && cd multimodal-page-rag
 uv sync
 uv run mmrag ingest examples/harbour-lane          # text-only index, works offline
 uv run mmrag query "how many days of annual leave do staff get?"
@@ -133,6 +134,16 @@ They are skipped in a normal `uv run pytest`. They check grounded answers, citat
 ## Contributing
 
 Good first issues: section-level units, OCR for scanned pages, a Streamlit viewer that shows the page PNGs next to scores, a Gemini multimodal embedder. Keep `fusion.py` dependency-free. MIT licensed.
+
+## Series
+
+Three small open-source demos built around one fictional Hong Kong company, each with one theme and one module you can lift out:
+
+| Repo | Theme | Lift-out module |
+|---|---|---|
+| [local-rag-sqlite](https://github.com/wchklaus97/local-rag-sqlite) | Classic RAG pipeline, chunking first | `chunk.py` |
+| [multimodal-page-rag](https://github.com/wchklaus97/multimodal-page-rag) | Page-level units + late fusion | `fusion.py` |
+| [agent-rag-pydantic-ai](https://github.com/wchklaus97/agent-rag-pydantic-ai) | Retrieval as an agent tool | `tools.py` |
 
 ## License
 
